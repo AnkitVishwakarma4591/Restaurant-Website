@@ -27,3 +27,4 @@ create policy "Allow booking submissions"
   );
 
 grant insert on public.bookings to anon;
+grant usage on sequence public.bookings_id_seq to anon;
