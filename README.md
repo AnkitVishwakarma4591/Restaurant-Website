@@ -2,6 +2,8 @@
 
 A responsive restaurant website concept with a reservation form connected to Supabase and Google Sheets. The project was made through **AI-assisted vibe coding**: large language models (LLMs) helped turn natural-language ideas into a working website, while the frontend, integrations, and database setup are implemented with ordinary web technologies. It is not a drag-and-drop no-code site builder.
 
+**Live website:** [View the project](https://resturantwebsite-ten.vercel.app/)
+
 > **Demo content:** “Saffron & Ember” and the restaurant details are sample content. Update the name, menu, address, contact information, hours, and photos with the restaurant’s verified details before publishing.
 
 ## Pages and screenshots
