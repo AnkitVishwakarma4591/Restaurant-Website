@@ -5,10 +5,11 @@ const bookingForm = document.getElementById("bookingForm");
 const bookingDate = document.getElementById("bookingDate");
 const formMessage = document.getElementById("formMessage");
 
-// Supabase > Project Settings > API. Use the publishable (or legacy anon) key;
-// never put a service_role/secret key in browser code.
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycby91TXcgFiQRr_m2_F1UyjH7wrt425ZUPXrhOgOkIjB_gI0pTJWLaWZI5GXVCwhUMbP/exec";
+const SUPABASE_URL = "https://puusxhlglndguvqiuedf.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_MqhNzT_0r_muqYDA3fedLw_Wl8ICIaq";
 
 // Mobile navigation
 if (menuToggle && mainNav) {
@@ -113,32 +114,54 @@ if (bookingForm && bookingDate && formMessage) {
     submitButton.textContent = "Submitting your request...";
 
     try {
-      if (
-        SUPABASE_URL === "YOUR_SUPABASE_PROJECT_URL" ||
-        SUPABASE_ANON_KEY === "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY"
-      ) {
-        throw new Error("Supabase setup is incomplete. Add the project URL and publishable key in script.js.");
-      }
-
-      const response = await fetch(`${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/bookings`, {
+      const supabaseResponse = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
         method: "POST",
         headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
           "Content-Type": "application/json",
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
           Prefer: "return=minimal"
         },
         body: JSON.stringify(booking)
       });
 
-      if (!response.ok) {
-        const details = await response.text();
-        console.error("Supabase booking error:", response.status, details);
-        throw new Error("Supabase rejected the booking. Check the table and RLS policy.");
+      if (!supabaseResponse.ok) {
+        const details = await supabaseResponse.text();
+        console.error("Supabase booking error:", supabaseResponse.status, details);
+        throw new Error("Supabase could not save the booking.");
       }
 
+      // Submit as a normal cross-origin HTML form. This avoids fetch/CORS
+      // restrictions when the website is opened directly from a local file.
+      const frameName = "googleSheetsSubmissionFrame";
+      if (!document.getElementById(frameName)) {
+        const frame = document.createElement("iframe");
+        frame.name = frameName;
+        frame.id = frameName;
+        frame.title = "Google Sheets submission";
+        frame.hidden = true;
+        document.body.appendChild(frame);
+      }
+
+      const googleForm = document.createElement("form");
+      googleForm.method = "POST";
+      googleForm.action = GOOGLE_SCRIPT_URL;
+      googleForm.target = frameName;
+      googleForm.hidden = true;
+
+      Object.entries(booking).forEach(([name, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        googleForm.appendChild(input);
+      });
+
+      document.body.appendChild(googleForm);
+      googleForm.submit();
+      googleForm.remove();
+
       formMessage.textContent =
-        `Thank you, ${booking.name}! Your request has been submitted. ` +
+        `Thank you, ${booking.name}! Your request was saved to Supabase and sent to Google Sheets. ` +
         "Please wait for the restaurant to confirm your reservation.";
 
       formMessage.classList.add("success");
@@ -150,7 +173,7 @@ if (bookingForm && bookingDate && formMessage) {
       console.error("Booking submission error:", error);
 
       formMessage.textContent = error.message.includes("Supabase")
-        ? "We couldn't save your request. Please try again later or contact the restaurant."
+        ? "We couldn't save your request to Supabase, so it wasn't sent to Google Sheets. Please try again later."
         : "We couldn't send your request. Please check your connection and try again.";
 
       formMessage.classList.add("error");
