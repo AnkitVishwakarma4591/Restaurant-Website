@@ -34,6 +34,7 @@ Screenshots are stored in [`assets/images`](assets/images/).
 - Booking validation, including required fields and preventing past booking dates.
 - Responsive account registration page with email/password validation and Supabase Auth.
 - Email/password sign-in with persisted Supabase sessions and sign-out from the home navigation.
+- Password recovery by email with a secure reset-link redirect and new-password flow.
 - Supabase Postgres storage for reservation submissions.
 - Google Sheets submission through a deployed Google Apps Script web app.
 - Row-level security policy that permits anonymous booking inserts without allowing visitors to read customer records.
@@ -45,7 +46,7 @@ Screenshots are stored in [`assets/images`](assets/images/).
 | Frontend | HTML, CSS, vanilla JavaScript | Website layout, responsive styling, navigation, validation, and form submission |
 | Database | Supabase (PostgreSQL) | Stores reservation records in the `public.bookings` table |
 | Sheet integration | Google Apps Script | Receives booking form data and appends it to the linked Google Sheet |
-| Authentication | Supabase Auth | Supports email/password registration, sign-in, persisted sessions, and sign-out |
+| Authentication | Supabase Auth | Supports email/password registration, sign-in, password recovery, persisted sessions, and sign-out |
 | AI-assisted workflow | LLMs / vibe coding | Helped draft and refine the site and its integration through natural-language instructions |
 
 ### Booking data flow
@@ -67,6 +68,10 @@ Restaurant-Website/
 ├── auth-client.js          # Shared Supabase Auth config and session helpers
 ├── auth.js                 # Supabase email/password sign-up
 ├── login.js                # Supabase email/password sign-in
+├── forgot-password.html    # Request a password reset email
+├── forgot-password.js     # Supabase password recovery request
+├── reset-password.html     # Choose a new password from a reset link
+├── reset-password.js      # Validate recovery session and update password
 ├── supabase-setup.sql      # Bookings table, RLS policy, and insert grants
 ├── README.md               # Project documentation
 └── LICENSE                 # MIT License
@@ -91,9 +96,9 @@ Booking is configured in `script.js`; authentication uses the shared settings in
 
 ### Authentication setup
 
-The registration page uses the same Supabase project and its public publishable key. In Supabase Dashboard, open **Authentication → Providers → Email** and make sure email sign-ups are enabled. If email confirmation is enabled, users will see a prompt to check their inbox and confirm their address; set the project's **Site URL** to the deployed site so confirmation links return to the right domain. Add a URL under allowed redirects only if the app later supplies a custom redirect URL. Supabase Auth stores accounts in its managed `auth.users` table; no separate application users table is required.
+The registration page uses the same Supabase project and its public publishable key. In Supabase Dashboard, open **Authentication → Providers → Email** and make sure email sign-ups are enabled. If email confirmation is enabled, users will see a prompt to check their inbox and confirm their address; set the project's **Site URL** to the deployed site. Password recovery redirects to `reset-password.html`, so add the deployed reset page URL under **Authentication → URL Configuration → Redirect URLs** (for example, `https://resturantwebsite-ten.vercel.app/reset-password.html`). Supabase Auth stores accounts in its managed `auth.users` table; no separate application users table is required.
 
-Open `signup.html` to register or `login.html` to sign in. The home page navigation reflects an active session and provides a sign-out button. This phase does not yet add protected pages or password recovery.
+Open `signup.html` to register, `login.html` to sign in, or select **Forgot password?** on the sign-in page to recover access. The home page navigation reflects an active session and provides a sign-out button. This project does not yet add protected pages.
 
 ## Google Sheets setup
 

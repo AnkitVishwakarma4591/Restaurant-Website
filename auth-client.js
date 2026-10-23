@@ -58,6 +58,41 @@ window.SaffronAuth = (() => {
     return session;
   }
 
+  async function recoverPassword(email, redirectTo) {
+    return request(`recover?redirect_to=${encodeURIComponent(redirectTo)}`, {
+      method: "POST",
+      body: { email }
+    });
+  }
+
+  async function updatePassword(password) {
+    const session = readSession();
+    if (!session?.access_token) throw new Error("Your reset link is missing or has expired.");
+    const user = await request("user", {
+      method: "PUT",
+      accessToken: session.access_token,
+      body: { password }
+    });
+    clearSession();
+    return user;
+  }
+
+  function setSessionFromRecoveryUrl() {
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    const isRecovery = params.get("type") === "recovery";
+    if (!accessToken || !refreshToken || !isRecovery) return false;
+
+    saveSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_in: Number(params.get("expires_in") || 3600)
+    });
+    window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    return true;
+  }
+
   async function refreshSession(session) {
     if (!session?.refresh_token) return null;
     try {
@@ -106,5 +141,15 @@ window.SaffronAuth = (() => {
     }
   }
 
-  return { readSession, saveSession, clearSession, signIn, getCurrentUser, signOut };
+  return {
+    readSession,
+    saveSession,
+    clearSession,
+    signIn,
+    recoverPassword,
+    updatePassword,
+    setSessionFromRecoveryUrl,
+    getCurrentUser,
+    signOut
+  };
 })();
