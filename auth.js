@@ -1,7 +1,3 @@
-const SUPABASE_URL = "https://puusxhlglndguvqiuedf.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_MqhNzT_0r_muqYDA3fedLw_Wl8ICIaq";
-
 const signupForm = document.getElementById("signupForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -100,10 +96,10 @@ if (signupForm) {
     submitButton.setAttribute("aria-busy", "true");
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      const response = await fetch(`${window.SAFFRON_AUTH_CONFIG.supabaseUrl}/auth/v1/signup`, {
         method: "POST",
         headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
+          apikey: window.SAFFRON_AUTH_CONFIG.publishableKey,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ email, password })
@@ -119,10 +115,12 @@ if (signupForm) {
         return;
       }
 
+      if (result.session) window.SaffronAuth.saveSession(result.session);
+
       signupForm.reset();
       showAlert(
         result.session
-          ? "Your account was created successfully. Account sign-in will be added in the next phase."
+          ? "Your account was created and you are signed in. Welcome to Saffron & Ember!"
           : "Your account has been created. Check your inbox for the confirmation link to finish signing up.",
         "success"
       );

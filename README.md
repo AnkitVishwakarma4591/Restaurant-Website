@@ -33,6 +33,7 @@ Screenshots are stored in [`assets/images`](assets/images/).
 - Responsive restaurant landing page with navigation, menu highlights, restaurant story, and booking form.
 - Booking validation, including required fields and preventing past booking dates.
 - Responsive account registration page with email/password validation and Supabase Auth.
+- Email/password sign-in with persisted Supabase sessions and sign-out from the home navigation.
 - Supabase Postgres storage for reservation submissions.
 - Google Sheets submission through a deployed Google Apps Script web app.
 - Row-level security policy that permits anonymous booking inserts without allowing visitors to read customer records.
@@ -44,7 +45,7 @@ Screenshots are stored in [`assets/images`](assets/images/).
 | Frontend | HTML, CSS, vanilla JavaScript | Website layout, responsive styling, navigation, validation, and form submission |
 | Database | Supabase (PostgreSQL) | Stores reservation records in the `public.bookings` table |
 | Sheet integration | Google Apps Script | Receives booking form data and appends it to the linked Google Sheet |
-| Authentication | Supabase Auth | Creates user accounts from the registration page using email and password |
+| Authentication | Supabase Auth | Supports email/password registration, sign-in, persisted sessions, and sign-out |
 | AI-assisted workflow | LLMs / vibe coding | Helped draft and refine the site and its integration through natural-language instructions |
 
 ### Booking data flow
@@ -61,8 +62,11 @@ Restaurant-Website/
 ├── style.css               # Responsive styles
 ├── script.js               # Navigation, validation, and booking integrations
 ├── signup.html             # Responsive account registration page
+├── login.html              # Responsive sign-in page
 ├── auth.css                # Registration page styles
+├── auth-client.js          # Shared Supabase Auth config and session helpers
 ├── auth.js                 # Supabase email/password sign-up
+├── login.js                # Supabase email/password sign-in
 ├── supabase-setup.sql      # Bookings table, RLS policy, and insert grants
 ├── README.md               # Project documentation
 └── LICENSE                 # MIT License
@@ -75,21 +79,21 @@ Restaurant-Website/
 3. Keep an internet connection available for externally hosted fonts and images.
 4. Submit a test booking and confirm it appears in both the Supabase `bookings` table and the connected Google Sheet.
 
-The booking integration is configured in `script.js`; authentication is configured in `auth.js`. For a different Supabase project, update the project URL and publishable key in both files. The Google Apps Script web app URL and destination sheet are configured separately.
+Booking is configured in `script.js`; authentication uses the shared settings in `auth-client.js`. For a different Supabase project, update its URL and publishable key in both `script.js` and `auth-client.js`. The Google Apps Script web app URL and destination sheet are configured separately.
 
 ## Supabase setup
 
 1. Create a Supabase project.
 2. Open **SQL Editor** in the Supabase dashboard.
 3. Run [`supabase-setup.sql`](supabase-setup.sql) to create `public.bookings`, enable row-level security, and allow anonymous inserts.
-4. Confirm the Supabase project URL and **publishable** key in both `script.js` and `auth.js` match that project.
+4. Confirm the Supabase project URL and **publishable** key in both `script.js` and `auth-client.js` match that project.
 5. Keep the policy insert-only. Do not put a Supabase service-role or secret key in browser code; those keys bypass protections intended for public visitors.
 
 ### Authentication setup
 
-The registration page uses the same Supabase project and its public publishable key. In Supabase Dashboard, open **Authentication → Providers → Email** and make sure email sign-ups are enabled. If email confirmation is enabled, users will see a prompt to check their inbox and confirm their address; configure the project's **Site URL** and allowed redirect URLs to match the deployed site so confirmation links return to the right domain. Supabase Auth stores accounts in its managed `auth.users` table; no separate application users table is required for this registration phase.
+The registration page uses the same Supabase project and its public publishable key. In Supabase Dashboard, open **Authentication → Providers → Email** and make sure email sign-ups are enabled. If email confirmation is enabled, users will see a prompt to check their inbox and confirm their address; set the project's **Site URL** to the deployed site so confirmation links return to the right domain. Add a URL under allowed redirects only if the app later supplies a custom redirect URL. Supabase Auth stores accounts in its managed `auth.users` table; no separate application users table is required.
 
-Open `signup.html` locally or choose **Create account** in the website navigation to try registration. This phase covers sign-up only; sign-in, sign-out, protected pages, and password recovery can be added as follow-on phases.
+Open `signup.html` to register or `login.html` to sign in. The home page navigation reflects an active session and provides a sign-out button. This phase does not yet add protected pages or password recovery.
 
 ## Google Sheets setup
 

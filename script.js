@@ -4,6 +4,8 @@ const mainNav = document.getElementById("mainNav");
 const bookingForm = document.getElementById("bookingForm");
 const bookingDate = document.getElementById("bookingDate");
 const formMessage = document.getElementById("formMessage");
+const accountLink = document.querySelector("[data-account-link]");
+const signOutButton = document.getElementById("signOutButton");
 
 const GOOGLE_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby91TXcgFiQRr_m2_F1UyjH7wrt425ZUPXrhOgOkIjB_gI0pTJWLaWZI5GXVCwhUMbP/exec";
@@ -49,6 +51,28 @@ const yearElement = document.getElementById("year");
 
 if (yearElement) {
   yearElement.textContent = new Date().getFullYear();
+}
+
+// Reflect the saved Supabase Auth session in the site navigation.
+if (window.SaffronAuth && accountLink && signOutButton) {
+  window.SaffronAuth.getCurrentUser().then((user) => {
+    if (!user) return;
+    accountLink.textContent = "My account";
+    accountLink.href = "#home";
+    signOutButton.hidden = false;
+  });
+
+  signOutButton.addEventListener("click", async () => {
+    signOutButton.disabled = true;
+    signOutButton.textContent = "Signing out…";
+    try {
+      await window.SaffronAuth.signOut();
+    } catch (error) {
+      console.error("Supabase sign-out error:", error);
+    } finally {
+      window.location.href = "index.html";
+    }
+  });
 }
 
 // Booking form submission
