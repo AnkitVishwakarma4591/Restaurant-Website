@@ -83,9 +83,10 @@ Restaurant-Website/
 ## Run locally
 
 1. Download or clone this repository.
-2. Open `index.html` in a browser, or serve the folder with a local web server.
-3. Keep an internet connection available for externally hosted fonts and images.
-4. Submit a test booking and confirm it appears in both the Supabase `bookings` table and the connected Google Sheet.
+2. Serve the folder with a local web server (avoid opening the HTML files with `file://` when testing Supabase Auth).
+3. Keep an internet connection available for Supabase, Google Fonts, and externally hosted images.
+4. For the simplest end-to-end auth test, use the deployed Vercel pages and the configured Supabase redirect URLs.
+5. Submit a test booking and confirm it appears in both the Supabase `bookings` table and the connected Google Sheet.
 
 Booking is configured in `script.js`; authentication uses the shared settings in `auth-client.js`. For a different Supabase project, update its URL and publishable key in both `script.js` and `auth-client.js`. The Google Apps Script web app URL and destination sheet are configured separately.
 
@@ -102,6 +103,10 @@ Booking is configured in `script.js`; authentication uses the shared settings in
 The registration page uses the same Supabase project and its public publishable key. In Supabase Dashboard, open **Authentication → Providers → Email** and make sure email sign-ups are enabled. If email confirmation is enabled, users will see a prompt to check their inbox and confirm their address; set the project's **Site URL** to the deployed site. Password recovery redirects to `reset-password.html`, so add the deployed reset page URL under **Authentication → URL Configuration → Redirect URLs** (for example, `https://resturantwebsite-ten.vercel.app/reset-password.html`). Supabase Auth stores accounts in its managed `auth.users` table; no separate application users table is required.
 
 Open `signup.html` to register, `login.html` to sign in, or select **Forgot password?** on the sign-in page to recover access. The `account.html` page checks the Supabase Auth session and shows a sign-in prompt when signed out. The site is static HTML, so this is a client-side page gate; never put private data in static page files. Protect any account-specific database records with Supabase Row Level Security policies.
+
+### Account and booking scope
+
+The account page currently shows the signed-in email and a link to make a booking. **Bookings are not linked to user accounts**, and users cannot view booking history from the account page. This is intentional for the current scope. If booking history is added later, associate each booking with an Auth user and enforce per-user access with Supabase Row Level Security. The static account-page gate is a user-interface check, not a server-side security boundary.
 
 ## Google Sheets setup
 
