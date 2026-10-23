@@ -61,9 +61,9 @@ if (loginForm) {
 
     try {
       await window.SaffronAuth.signIn(email, password);
-      showLoginAlert("You're signed in. Taking you back to the restaurant…", "success");
+      showLoginAlert("You're signed in. Opening your account…", "success");
       window.setTimeout(() => {
-        window.location.href = "index.html?auth=signed-in";
+        window.location.href = "account.html";
       }, 700);
     } catch (error) {
       console.error("Supabase sign-in error:", error);

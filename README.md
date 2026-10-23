@@ -35,6 +35,7 @@ Screenshots are stored in [`assets/images`](assets/images/).
 - Responsive account registration page with email/password validation and Supabase Auth.
 - Email/password sign-in with persisted Supabase sessions and sign-out from the home navigation.
 - Password recovery by email with a secure reset-link redirect and new-password flow.
+- A session-aware account page with a sign-in prompt for signed-out visitors.
 - Supabase Postgres storage for reservation submissions.
 - Google Sheets submission through a deployed Google Apps Script web app.
 - Row-level security policy that permits anonymous booking inserts without allowing visitors to read customer records.
@@ -72,6 +73,8 @@ Restaurant-Website/
 ├── forgot-password.js     # Supabase password recovery request
 ├── reset-password.html     # Choose a new password from a reset link
 ├── reset-password.js      # Validate recovery session and update password
+├── account.html            # Account page with signed-in and signed-out states
+├── account.js              # Session check and account sign-out
 ├── supabase-setup.sql      # Bookings table, RLS policy, and insert grants
 ├── README.md               # Project documentation
 └── LICENSE                 # MIT License
@@ -98,7 +101,7 @@ Booking is configured in `script.js`; authentication uses the shared settings in
 
 The registration page uses the same Supabase project and its public publishable key. In Supabase Dashboard, open **Authentication → Providers → Email** and make sure email sign-ups are enabled. If email confirmation is enabled, users will see a prompt to check their inbox and confirm their address; set the project's **Site URL** to the deployed site. Password recovery redirects to `reset-password.html`, so add the deployed reset page URL under **Authentication → URL Configuration → Redirect URLs** (for example, `https://resturantwebsite-ten.vercel.app/reset-password.html`). Supabase Auth stores accounts in its managed `auth.users` table; no separate application users table is required.
 
-Open `signup.html` to register, `login.html` to sign in, or select **Forgot password?** on the sign-in page to recover access. The home page navigation reflects an active session and provides a sign-out button. This project does not yet add protected pages.
+Open `signup.html` to register, `login.html` to sign in, or select **Forgot password?** on the sign-in page to recover access. The `account.html` page checks the Supabase Auth session and shows a sign-in prompt when signed out. The site is static HTML, so this is a client-side page gate; never put private data in static page files. Protect any account-specific database records with Supabase Row Level Security policies.
 
 ## Google Sheets setup
 

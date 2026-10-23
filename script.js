@@ -58,7 +58,7 @@ if (window.SaffronAuth && accountLink && signOutButton) {
   window.SaffronAuth.getCurrentUser().then((user) => {
     if (!user) return;
     accountLink.textContent = "My account";
-    accountLink.href = "#home";
+    accountLink.href = "account.html";
     signOutButton.hidden = false;
   });
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Your Saffron & Ember account." />
+  <meta name="theme-color" content="#343b2c" />
+  <title>My account | Saffron & Ember</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="auth.css" />
+  <script src="auth-client.js" defer></script>
+  <script src="account.js" defer></script>
+</head>
+<body class="account-page">
+  <header class="account-header">
+    <a class="brand" href="index.html" aria-label="Saffron and Ember home">
+      <span class="brand-mark">S<span>&amp;</span>E</span>
+      <span class="brand-name">SAFFRON <i>&amp;</i> EMBER<small>GOOD FOOD. GOOD COMPANY.</small></span>
+    </a>
+    <a class="account-home-link" href="index.html">Visit the restaurant ↗</a>
+  </header>
+
+  <main class="account-main">
+    <section class="account-card" aria-labelledby="accountTitle">
+      <p class="eyebrow"><span></span> YOUR PLACE AT OUR TABLE</p>
+      <div class="account-mark" aria-hidden="true">✳</div>
+      <div id="accountLoading" class="account-status" role="status" aria-live="polite">Checking your sign-in…</div>
+
+      <div id="accountContent" hidden>
+        <h1 id="accountTitle">Welcome back.</h1>
+        <p class="account-intro">Your Saffron &amp; Ember account is ready.</p>
+        <div class="account-detail">
+          <span class="detail-label">SIGNED IN AS</span>
+          <strong id="accountEmail"></strong>
+        </div>
+        <div class="account-actions">
+          <a class="button button-dark" href="index.html#booking">Book a table <span>↗</span></a>
+          <button class="button account-signout" id="accountSignOut" type="button">Sign out</button>
+        </div>
+      </div>
+
+      <div id="accountSignedOut" hidden>
+        <h1 id="accountTitleSignedOut">Sign in to continue.</h1>
+        <p class="account-intro">This account page is available after you sign in.</p>
+        <a class="button button-dark" href="login.html">Go to sign in <span>↗</span></a>
+        <p class="auth-switch account-create">New here? <a href="signup.html">Create an account</a></p>
+      </div>
+      <p class="account-footnote">Your reservations are handled through the booking form. They are not yet linked to this account.</p>
+    </section>
+  </main>
+  <footer class="account-footer">© <span id="year"></span> Saffron &amp; Ember · Good food. Good company.</footer>
+</body>
+</html>
